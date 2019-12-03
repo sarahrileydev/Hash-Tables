@@ -51,9 +51,21 @@ class HashTable:
 
         '''
         index = self._hash_mod(key)
-
+        #check if there is already a LL
         if self.storage[index] is not None:
-            print(f"WARNING: Overwriting data at {index}")
+            # if yes, check current to track if it is the key
+            current = self.storage[index]
+            found = False
+            while current and not found:
+                # if key found then update it
+                if current.key == key:
+                    current.value = value
+                    found = True
+                #if not found, create new node
+                elif current.next == None:
+                    current.next = LinkedPair(key, value)
+                    exists = True
+
 
         self.storage[index] = LinkedPair(key, value)
 
