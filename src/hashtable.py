@@ -1,21 +1,24 @@
 # '''
 # Linked List hash table key/value pair
 # '''
+
+
 class LinkedPair:
     def __init__(self, key, value):
         self.key = key
         self.value = value
         self.next = None
 
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
     that accepts string keys
     '''
+
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
-
 
     def _hash(self, key):
         '''
@@ -25,7 +28,6 @@ class HashTable:
         '''
         return hash(key)
 
-
     def _hash_djb2(self, key):
         '''
         Hash an arbitrary key using DJB2 hash
@@ -34,7 +36,6 @@ class HashTable:
         '''
         pass
 
-
     def _hash_mod(self, key):
         '''
         Take an arbitrary key and return a valid integer index
@@ -42,18 +43,31 @@ class HashTable:
         '''
         return self._hash(key) % self.capacity
 
-
     def insert(self, key, value):
         '''
         Store the value with the given key.
 
         Hash collisions should be handled with Linked List Chaining.
 
-        Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        #check if there is already a LL
+        if self.storage[index] is not None:
+            # if yes, check current to track if it is the key
+            current = self.storage[index]
+            found = False
+            while current and not found:
+                # if key found then update it
+                if current.key == key:
+                    current.value = value
+                    found = True
+                #if not found, create new node
+                elif current.next == None:
+                    current.next = LinkedPair(key, value)
+                    exists = True
 
 
+        self.storage[index] = LinkedPair(key, value)
 
     def remove(self, key):
         '''
@@ -61,10 +75,14 @@ class HashTable:
 
         Print a warning if the key is not found.
 
-        Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
 
+        if self.storage[index] is None:
+            print(f"WARNING: key not found")
+            return
+
+        self.storage[index] = None
 
     def retrieve(self, key):
         '''
@@ -72,20 +90,35 @@ class HashTable:
 
         Returns None if the key is not found.
 
-        Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
 
+        if self.storage[index] is not None:
+
+            if self.storage[index].key == key:
+                return self.storage[index].value
+            else:
+                print(f"WARNING: Key does not match.")
+                return None
+
+        else:
+            return None
 
     def resize(self):
         '''
         Doubles the capacity of the hash table and
         rehash all key/value pairs.
 
-        Fill this in.
         '''
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
 
+        for bucket_item in self.storage:
+            if bucket_item is not None:
+                new_index = self._hash_mod(bucket_item.key)
+                new_storage[new_index] = LinkedPair(bucket_item.key, bucket_item.value)
+
+        self.storage = new_storage
 
 
 if __name__ == "__main__":
